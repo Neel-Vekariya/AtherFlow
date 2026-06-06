@@ -4,6 +4,7 @@ import correlationalId from "./middlewares/correlationIdMiddleware.js";
 import requestLoggerMiddleware from "./middlewares/requestLogger.js";
 import ErrorHandler from "./middlewares/ErrorHandler.js";
 import router from "./routes/health.js";
+import webhookRouter from "./routes/webhook.js";
 const app = express();
 dotenv.config({
     path:'./.env'
@@ -15,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(correlationalId());   
 app.use(requestLoggerMiddleware);
-// app.use("webhook", webhookRouter);
+app.use("/webhook", webhookRouter);
 
 
 app.use(router);

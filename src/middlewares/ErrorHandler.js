@@ -1,10 +1,4 @@
-export class ApiError extends Error {
-    constructor(statusCode,message,IsOperational=true) {
-        super(message);
-        this.statusCode = statusCode;
-        this.IsOperational = IsOperational;
-    }
-}
+import logger from "../utils/logger.js";
 
 
 export default function ErrorHandler(err, req, res, next) {
@@ -12,7 +6,11 @@ export default function ErrorHandler(err, req, res, next) {
     const IsOperational = err.IsOperational || false;
     
     if(!IsOperational) {
-        logger.error(`Unexpected error: ${err.message}`, { err, correlationId:req.correlationId});
+        logger.error(`Unexpected error: ${err.message}`, { err, correlationId:req?.correlationId});
+    }
+
+    if (!res || typeof res.status !== "function") {
+        throw err; 
     }
 
     res.status(statusCode).json({
