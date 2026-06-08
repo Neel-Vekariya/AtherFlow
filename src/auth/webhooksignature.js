@@ -1,5 +1,5 @@
 import {createHmac, timingSafeEqual} from 'crypto';
-import ApiError from '../middlewares/ApiError';
+import ApiError from '../middlewares/ApiError.js';
 
 export function verifyWebhookSignature(signatureHeader,rawBody,secret) {
     if (!signatureHeader) {

@@ -1,19 +1,16 @@
-import { promise } from "zod";
-
-
-export function withRetry(fn, options={}){
+export async function withRetry(fn, options={}){
     const {
         maxAttempts = 5,
         baseDelay = 100,
         maxDelay = 30_000,
-        shouldRetry = () =>{},
+        shouldRetry = (error) => error.status >= 500,
         onRetry = () =>{}
     }=options
 
     let lastError;
     for(let Attempt = 0; Attempt < maxAttempts; Attempt++){
         try {
-            return fn()
+            return await fn()
             }
         catch (error) {
             lastError = error
@@ -22,7 +19,7 @@ export function withRetry(fn, options={}){
             
             if(!shouldRetry(error,Attempt)) break
             
-            const exponentialDelay = Math.min(maxDelay, baseDelay * Math.pow(2, maxAttempts))
+            const exponentialDelay = Math.min(maxDelay, baseDelay * Math.pow(2, Attempt))
             const jitterdDelay = Math.random() * exponentialDelay
             
             onRetry({Attempt, delay: jitterdDelay, error:error})
@@ -35,3 +32,4 @@ export function withRetry(fn, options={}){
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve,ms))
 }
+
