@@ -3,7 +3,7 @@ import logger from '../src/logger.js'
 
 let client;
 
-export function getRedisClient(){
+function getRedisClient(){
     if(!client){
         client = new Radis(process.env.RADIS_URL || "redis://localhost:6379",{
             maxRetriesPerRequest:3,
@@ -18,9 +18,14 @@ export function getRedisClient(){
     return client;
 }
 
-export async function closeRedis(){
+async function closeRedis(){
     if(client){
         await client.quit()
         client=null
     }
+}
+
+export  {
+    getRedisClient,
+    closeRedis
 }

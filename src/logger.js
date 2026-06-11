@@ -1,5 +1,4 @@
 import pino from "pino";
-import { version } from "react";
 import { getContext } from "./context.js";
 
 const logger = pino({

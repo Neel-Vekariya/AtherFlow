@@ -1,6 +1,6 @@
-import { asyncLocalStorage } from "async_hooks"
+import { AsyncLocalStorage } from "async_hooks";
 
-const requestContext = asyncLocalStorage()
+const requestContext = new AsyncLocalStorage()
 
 export function runWithContext(context, fn){
     return requestContext.run(context,fn)
