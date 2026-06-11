@@ -38,6 +38,24 @@ async function reclaimStalledMessages(stream, group, customer, minIdealTimeMs=30
 }
 
 
+async function handleFaildMessages(stream,group,messageId,event,error,attempt){
+    if(attempt > MAX_RETRIES){
+        await getRedisClient().xadd(
+            'aetherflow:dlq',
+            '*',
+            'original_stream', stream,
+            'original_id', messageId,
+            'event', JSON.stringify(event),
+            'error', error.message,
+            'failed_at', Date.now().toString(),
+            'attempts', attempt.toString()
+        );
+        await client.xack(stream, group, messageId);
+        logger.error({ messageId, error: error.message, attempt }, 'Message moved to DLQ');
+    }
+}
+    
+
 export  {
     ensureConsumerGroup,
     readMessages,
